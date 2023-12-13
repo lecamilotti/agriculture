@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import StateChart from './StateChart';
 import CultureChart from './CultureChart';
 import LandUsageChart from './LandUsageChart';
+import apiService from '../../services/apiService';
 
 const DashboardContainer = styled.div`
   background-color: #f9f9f9;
@@ -36,9 +37,27 @@ const ChartContainer = styled.div`
 `;
 
 const Dashboard = () => {
-  // Simulated data for demonstration purposes
-  const totalFarms = 50;
-  const totalArea = 1500;
+  const [totalFarms, setTotalFarms] = useState(0);
+  const [totalArea, setTotalArea] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const producers = await apiService.getAllProducers();
+        setTotalFarms(producers.length);
+
+        const totalAreaCalculation = producers.reduce(
+          (total, producer) => total + producer.totalArea,
+          0
+        );
+        setTotalArea(totalAreaCalculation);
+      } catch (error) {
+        console.error('Error fetching data for Dashboard:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <DashboardContainer>

@@ -90,8 +90,8 @@ const producers = [
     cpfCnpj: '55555555555',
     producerName: 'Gabriela Fernandes',
     farmName: 'Fazenda Santa Rosa',
-    city: 'Fortaleza',
-    state: 'CE',
+    city: 'Porto Alegre',
+    state: 'RS',
     totalArea: 1700,
     agriculturableArea: 1100,
     vegetationArea: 600,
@@ -102,8 +102,8 @@ const producers = [
     cpfCnpj: '66666666666',
     producerName: 'Ricardo Barbosa',
     farmName: 'Fazenda Vale Verde',
-    city: 'Manaus',
-    state: 'AM',
+    city: 'Porto Alegre',
+    state: 'RS',
     totalArea: 2100,
     agriculturableArea: 1400,
     vegetationArea: 700,
@@ -128,13 +128,17 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const apiService = {
   getAllProducers: async () => {
-    // Simulate fetching all producers from the database/API
     await delay(500); // Simulated delay
     return producers;
   },
 
+  getProducerById: async (producerId) => {
+    await delay(500); // Simulated delay
+    const producer = producers.find((p) => p.id === producerId);
+    return producer || null;
+  },
+
   addProducer: async (newProducerData) => {
-    // Simulate adding a new producer to the database/API
     await delay(500); // Simulated delay
     const newProducer = { id: Date.now(), ...newProducerData };
     producers.push(newProducer);
@@ -142,27 +146,23 @@ const apiService = {
   },
 
   updateProducer: async (producerId, updatedData) => {
-    // Simulate updating an existing producer in the database/API
     await delay(500); // Simulated delay
-    const producerToUpdate = producers.find(
-      (producer) => producer.id === producerId
-    );
+    const producerToUpdate = producers.find((p) => p.id === producerId);
     if (producerToUpdate) {
       Object.assign(producerToUpdate, updatedData);
       return producerToUpdate;
     }
-    return null; // Return null if producer is not found
+    return null;
   },
 
   deleteProducer: async (producerId) => {
-    // Simulate deleting a producer from the database/API
     await delay(500); // Simulated delay
-    const index = producers.findIndex((producer) => producer.id === producerId);
+    const index = producers.findIndex((p) => p.id === producerId);
     if (index !== -1) {
       const deletedProducer = producers.splice(index, 1)[0];
       return deletedProducer;
     }
-    return null; // Return null if producer is not found
+    return null;
   },
 };
 
