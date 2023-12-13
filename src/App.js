@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import rootReducer from './redux/rootReducer';
 
-function App() {
+import styled from 'styled-components';
+import ProducerForm from './components/ProducerForm/ProducerForm';
+import ProducerList from './components/ProducerForm/ProducerFormList';
+import Dashboard from './components/Dashboard/Dashboard';
+
+const store = createStore(rootReducer);
+
+const AppContainer = styled.div`
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+`;
+
+const AppHeader = styled.h1`
+  text-align: center;
+  margin-bottom: 30px;
+`;
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <AppContainer>
+        <AppHeader>Producer Management System</AppHeader>
+        <ProducerForm />
+        <hr />
+        <ProducerList />
+        <hr />
+        <Dashboard />
+      </AppContainer>
+    </Provider>
   );
-}
+};
 
 export default App;
