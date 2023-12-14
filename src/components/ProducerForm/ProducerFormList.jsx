@@ -1,4 +1,5 @@
 // ProducerList.js
+// ProducerList.js
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
@@ -7,29 +8,26 @@ import apiService from '../../services/apiService';
 import ProducerForm from './ProducerForm';
 
 const ListContainer = styled.div`
-  background-color: #f5f5f5;
+  background-color: #181b23;
+  color: #eeeef2;
   border-radius: 8px;
   padding: 20px;
+  width: 100%;
+  max-width: 600px;
 `;
 
 const ProducerItem = styled.div`
-  background-color: #fff;
+  background-color: #d1d2dc;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin-bottom: 20px;
   transition: transform 0.3s ease-in-out;
-  cursor: pointer;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
 `;
 
 const ProducerInfo = styled.div`
   margin-bottom: 10px;
 `;
-
 const ProducerName = styled.h3`
   font-size: 20px;
   margin: 0;
@@ -43,11 +41,17 @@ const FarmName = styled.p`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 `;
 
 const Icon = styled.span`
-  margin-left: 10px;
+  margin-right: 10px; /* Adjust margin */
   cursor: pointer;
+`;
+
+const CityState = styled.p`
+  color: #555;
+  margin: 5px 0;
 `;
 
 const ProducerList = () => {
@@ -86,18 +90,23 @@ const ProducerList = () => {
   return (
     <ListContainer>
       {producers.map((producer) => (
-        <Link to={`/producer/${producer.id}`} key={producer.id}>
+        <div key={producer.id}>
           <ProducerItem>
-            <ProducerInfo>
-              <ProducerName>{producer.producerName}</ProducerName>
-              <FarmName>{producer.farmName}</FarmName>
-            </ProducerInfo>
+            <Link to={`/producer/${producer.id}`}>
+              <ProducerInfo>
+                <ProducerName>{producer.producerName}</ProducerName>
+                <FarmName>{producer.farmName}</FarmName>
+                <CityState>
+                  {producer.city}, {producer.state}
+                </CityState>
+              </ProducerInfo>
+            </Link>
             <ButtonContainer>
               <Icon onClick={() => handleUpdate(producer)}>✏️</Icon>
               <Icon onClick={() => handleDelete(producer.id)}>❌</Icon>
             </ButtonContainer>
           </ProducerItem>
-        </Link>
+        </div>
       ))}
       {selectedProducer && <ProducerForm producerData={selectedProducer} />}
     </ListContainer>

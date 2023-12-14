@@ -1,29 +1,36 @@
 import {
   ADD_PRODUCER,
-  EDIT_PRODUCER,
   DELETE_PRODUCER,
+  EDIT_PRODUCER,
   GET_CULTURE,
-  UPDATE_TOTAL_FARMS,
-  UPDATE_TOTAL_AREA,
+  GET_PRODUCER_LIST,
   UPDATE_LAND_USAGE_AREA,
   UPDATE_STATES_DATA,
+  UPDATE_TOTAL_AREA,
+  UPDATE_TOTAL_FARMS,
 } from './producerActions';
 
 const initialState = {
-  producers: [], // Initial state for producers
-  culture: [], // Initial state for culture data
-  totalFarms: 0, // Initial state for total farms
-  totalArea: 0, // Initial state for total area
-  landUsageArea: 0, // Initial state for land usage area
-  statesData: [], // Initial state for states data
+  producers: [],
+  culture: [],
+  totalFarms: 0,
+  totalArea: 0,
+  landUsageArea: 0,
+  statesData: [],
 };
 
 const producerReducer = (state = initialState, action) => {
   switch (action.type) {
+    case GET_PRODUCER_LIST:
+      return {
+        ...state,
+        producers: action.payload,
+      };
+
     case ADD_PRODUCER:
       return {
         ...state,
-        producers: [...state.producers, action.payload],
+        producers: action.payload,
       };
 
     case EDIT_PRODUCER:
@@ -33,6 +40,14 @@ const producerReducer = (state = initialState, action) => {
           producer.id === action.payload.producerId
             ? { ...producer, ...action.payload.updatedData }
             : producer
+        ),
+      };
+
+    case DELETE_PRODUCER:
+      return {
+        ...state,
+        producers: state.producers.filter(
+          (producer) => producer.id !== action.payload
         ),
       };
 
@@ -64,14 +79,6 @@ const producerReducer = (state = initialState, action) => {
       return {
         ...state,
         statesData: action.payload,
-      };
-
-    case DELETE_PRODUCER:
-      return {
-        ...state,
-        producers: state.producers.filter(
-          (producer) => producer.id !== action.payload
-        ),
       };
 
     default:
