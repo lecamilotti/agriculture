@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import apiService from '../../services/apiService';
 import {
   formatCNPJ,
   formatCPF,
   validateCNPJ,
   validateCPF,
 } from '../../utils/validationUtils';
+import { useDispatch, useSelector } from 'react-redux';
+import { addProducer } from '../../redux/producerActions';
 
 const FormContainer = styled.div`
   background-color: #616480;
@@ -99,7 +100,7 @@ const RemoveCulture = styled.span`
 `;
 const ErrorLabel = styled.span`
   color: red;
-  font-size: 12px;
+  font-size: 18px;
 `;
 
 const SwitchWrapper = styled.div`
@@ -170,8 +171,11 @@ const SwitchText = styled.span`
 const ProducerForm = () => {
   const [error, setError] = useState('');
   const [isCpfSelected, setIsCpfSelected] = useState(true);
+  const [CpfOrCnpjError, setCpfOrCnpjError] = useState('');
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
+    id: '',
     cpfCnpj: '',
     producerName: '',
     farmName: '',
@@ -184,17 +188,36 @@ const ProducerForm = () => {
     selectedCulture: '',
   });
 
+  const currentData = useSelector((state) => state?.producer?.producers);
+
   const handleToggle = () => {
     setIsCpfSelected((prevState) => !prevState);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'selectedCulture' && value) {
+      // Check if the selected culture already exists in the cultures list
+      if (formData.cultures.includes(value)) {
+        // Show an error or handle it according to your requirement
+        // For example, set an error state
+        setError('This culture is already added.');
+        return;
+      }
 
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+      // Add the selected culture to the cultures list if it's not a duplicate
+      setFormData({
+        ...formData,
+        cultures: [...formData.cultures, value],
+        selectedCulture: '', // Clear the selected value after adding to the list
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+        id: Math.floor(Math.random() * 10000),
+      });
+    }
   };
 
   const handleCultureRemove = (index) => {
@@ -207,25 +230,27 @@ const ProducerForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { selectedCulture, ...newProducerData } = formData;
-    try {
-      const newProducer = await apiService.addProducer(newProducerData);
-      console.log('New Producer Added:', newProducer);
-      setFormData({
-        cpfCnpj: '',
-        producerName: '',
-        farmName: '',
-        city: '',
-        state: '',
-        totalArea: '',
-        agriculturableArea: '',
-        vegetationArea: '',
-        cultures: [],
-        selectedCulture: '',
-      });
-    } catch (error) {
-      console.error('Error adding producer:', error);
+
+    if (
+      !formData.cpfCnpj ||
+      !formData.producerName ||
+      !formData.farmName ||
+      !formData.city ||
+      !formData.state ||
+      !formData.totalArea ||
+      !formData.agriculturableArea ||
+      !formData.vegetationArea ||
+      !formData.cultures.length
+    ) {
+      setError('Por favor preencha todos os campos.');
+      return;
+    } else {
+      setError('');
     }
+
+    // get the current date and concatenate with the new formData to be sent to the api
+    const newData = [...currentData, formData];
+    dispatch(addProducer(newData));
   };
 
   const handleCheckboxChange = () => {
@@ -250,18 +275,20 @@ const ProducerForm = () => {
         setError('');
       }
     }
-    if (name === 'cpfCnpj') {
+    if (name === 'cpfCnpj' && value.length > 0) {
       if (isCpfSelected) {
         if (!validateCPF(value)) {
-          setError('Invalid CPF');
+          setCpfOrCnpjError('CPF Inválido');
+          return;
         } else {
-          setError('');
+          setCpfOrCnpjError('');
         }
       } else {
         if (!validateCNPJ(value)) {
-          setError('Invalid CNPJ');
+          setCpfOrCnpjError('CNPJ Inválido');
+          return;
         } else {
-          setError('');
+          setCpfOrCnpjError('');
         }
       }
     }
@@ -273,7 +300,7 @@ const ProducerForm = () => {
       <form onSubmit={handleSubmit}>
         <FormGroup>
           <Label>{isCpfSelected ? 'Digite seu CPF' : 'Digite seu CNPJ'}</Label>
-          <ErrorLabel>{error}</ErrorLabel>
+          {CpfOrCnpjError && <ErrorLabel>{CpfOrCnpjError}</ErrorLabel>}
           <SwitchWrapper>
             <InputField
               type='text'
@@ -425,8 +452,10 @@ const ProducerForm = () => {
             </SelectField>
           </CulturesContainer>
         </FormGroup>
+
         <SubmitButton type='submit'>Cadastrar</SubmitButton>
       </form>
+      {error && <ErrorLabel>{error}</ErrorLabel>}
     </FormContainer>
   );
 };

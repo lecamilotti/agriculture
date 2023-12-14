@@ -27,7 +27,7 @@ const ChartTitle = styled.h3`
 const CultureChart = () => {
   const [cultureData, setCultureData] = useState([]);
 
-  const cultures = useSelector((state) => state.producer.culture);
+  const cultures = useSelector((state) => state?.producer?.culture);
 
   useEffect(() => {
     if (cultures !== undefined) {

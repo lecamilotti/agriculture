@@ -27,7 +27,7 @@ const ChartTitle = styled.h3`
 const StateChart = () => {
   const [stateData, setStateData] = useState([]);
 
-  const getStaeData = useSelector((state) => state.producer.statesData);
+  const getStaeData = useSelector((state) => state?.producer?.statesData);
 
   useEffect(() => {
     if (getStaeData !== undefined) {
