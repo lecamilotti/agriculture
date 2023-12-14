@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from 'recharts';
 import styled from 'styled-components';
-import apiService from '../../services/apiService';
+import { useSelector } from 'react-redux';
 
 const ChartContainer = styled.div`
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: #181b23;
+
+  color: #eeeef2;
+  border: 1px solid #4b4d63;
   padding: 20px;
 `;
 
@@ -18,41 +27,17 @@ const ChartTitle = styled.h3`
 const CultureChart = () => {
   const [cultureData, setCultureData] = useState([]);
 
+  const cultures = useSelector((state) => state.producer.culture);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const producers = await apiService.getAllProducers();
-        const cultures = producers.reduce((acc, producer) => {
-          producer.cultures.forEach((culture) => {
-            if (acc[culture]) {
-              acc[culture]++;
-            } else {
-              acc[culture] = 1;
-            }
-          });
-          return acc;
-        }, {});
-
-        const formattedData = Object.entries(cultures).map(([culture, count], index) => ({
-          name: culture,
-          value: count,
-          fill: COLORS[index % COLORS.length],
-        }));
-
-        setCultureData(formattedData);
-      } catch (error) {
-        console.error('Error fetching data for Culture Chart:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const COLORS = ['#ff9999', '#99ff99', '#9999ff', '#ffff99', '#ff99ff']; // Custom colors for cultures
+    if (cultures !== undefined) {
+      setCultureData(cultures);
+    }
+  }, [cultures]);
 
   return (
     <ChartContainer>
-      <ChartTitle>Culture Distribution</ChartTitle>
+      <ChartTitle>Distribuição por cultivo</ChartTitle>
       <ResponsiveContainer width='100%' height={300}>
         <PieChart>
           <Pie

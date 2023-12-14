@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from 'recharts';
 import styled from 'styled-components';
-import apiService from '../../services/apiService';
+
+import { useSelector } from 'react-redux';
 
 const ChartContainer = styled.div`
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: #181b23;
+  color: #eeeef2;
+  border: 1px solid #4b4d63;
   padding: 20px;
 `;
 
@@ -18,39 +27,17 @@ const ChartTitle = styled.h3`
 const StateChart = () => {
   const [stateData, setStateData] = useState([]);
 
+  const getStaeData = useSelector((state) => state.producer.statesData);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const producers = await apiService.getAllProducers();
-        const states = {};
-        producers.forEach((producer) => {
-          if (states[producer.state]) {
-            states[producer.state]++;
-          } else {
-            states[producer.state] = 1;
-          }
-        });
-
-        const formattedData = Object.entries(states).map(([state, count], index) => ({
-          name: state,
-          value: count,
-          fill: COLORS[index % COLORS.length],
-        }));
-
-        setStateData(formattedData);
-      } catch (error) {
-        console.error('Error fetching data for State Chart:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF']; // Add more colors if needed
+    if (getStaeData !== undefined) {
+      setStateData(getStaeData);
+    }
+  }, [getStaeData]);
 
   return (
     <ChartContainer>
-      <ChartTitle>State-wise Distribution of Farms</ChartTitle>
+      <ChartTitle>Distribuição de fazendas por estados</ChartTitle>
       <ResponsiveContainer width='100%' height={300}>
         <PieChart>
           <Pie

@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from 'recharts';
 import styled from 'styled-components';
-import apiService from '../../services/apiService';
+import { useSelector } from 'react-redux';
 
 const ChartContainer = styled.div`
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: #181b23;
+  color: #eeeef2;
+  border: 1px solid #4b4d63;
   padding: 20px;
 `;
 
@@ -18,36 +26,19 @@ const ChartTitle = styled.h3`
 const LandUsageChart = () => {
   const [landUsageData, setLandUsageData] = useState([]);
 
+  const landData = useSelector((state) => state.producer.landUsageArea);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const producers = await apiService.getAllProducers();
-        const landUsage = producers.reduce(
-          (acc, producer) => {
-            acc.agriculturableArea += producer.agriculturableArea;
-            acc.vegetationArea += producer.vegetationArea;
-            return acc;
-          },
-          { agriculturableArea: 0, vegetationArea: 0 }
-        );
+    if (landData !== undefined) {
+      setLandUsageData(landData);
+    }
+  }, [landData]);
 
-        setLandUsageData([
-          { name: 'Agriculturable', value: landUsage.agriculturableArea },
-          { name: 'Vegetation', value: landUsage.vegetationArea },
-        ]);
-      } catch (error) {
-        console.error('Error fetching data for Land Usage Chart:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const COLORS = ['#82ca9d', '#8884d8']; // Colors for Agriculturable and Vegetation areas
+  const COLORS = ['#8884d8', '#82ca9d']; // Colors for Agriculturable and Vegetation areas
 
   return (
     <ChartContainer>
-      <ChartTitle>Land Usage Distribution</ChartTitle>
+      <ChartTitle>Distribuição de uso das terras </ChartTitle>
       <ResponsiveContainer width='100%' height={300}>
         <PieChart>
           <Pie
@@ -59,9 +50,13 @@ const LandUsageChart = () => {
             fill='#8884d8'
             label
           >
-            {landUsageData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
+            {landUsageData &&
+              landUsageData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.fill ? entry.fill : COLORS[index % COLORS.length]}
+                />
+              ))}
           </Pie>
           <Tooltip />
           <Legend />

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import rootReducer from './redux/rootReducer';
+import './styles.css';
+
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 import styled from 'styled-components';
@@ -9,17 +9,19 @@ import ProducerForm from './components/ProducerForm/ProducerForm';
 import ProducerList from './components/ProducerForm/ProducerFormList';
 import ProducerItem from './components/ProducerForm/ProducerItem';
 import Dashboard from './components/Dashboard/Dashboard';
-
-const store = createStore(rootReducer);
+import store from './redux/rootReducer';
 
 const AppContainer = styled.div`
   display: flex;
   font-family: Arial, sans-serif;
+  background-color: #181b23;
+  color: #eeeef2;
 `;
 
 const Sidebar = styled.div`
   width: 250px;
-  background-color: #f5f5f5;
+  background-color: #181b23;
+  color: #eeeef2;
   padding: 20px;
   transition: width 0.3s ease-in-out;
 
@@ -32,13 +34,13 @@ const Sidebar = styled.div`
 
       a {
         text-decoration: none;
-        color: #333;
+        color: #eeeef2;
         display: block;
         padding: 8px;
         transition: background-color 0.3s ease;
 
         &:hover {
-          background-color: #ddd;
+          background-color: #9699b0;
         }
       }
     }
@@ -80,13 +82,13 @@ const App = () => {
             <h2>Menu</h2>
             <ul>
               <li>
+                <Link to='/'>Dashboard</Link>
+              </li>
+              <li>
                 <Link to='/producerform'>Add Producer</Link>
               </li>
               <li>
                 <Link to='/producers'>Producer List</Link>
-              </li>
-              <li>
-                <Link to='/'>Dashboard</Link>
               </li>
             </ul>
           </Sidebar>
@@ -99,9 +101,6 @@ const App = () => {
           <Content>
             <h1>Producer Manager</h1>
             <Routes>
-              <Route path='/producerform' exact element={<ProducerForm />} />
-              <Route path='/producers' exact element={<ProducerList />} />
-              <Route path='/producer/:id' element={<ProducerItem />} />
               <Route
                 path='/'
                 exact
@@ -111,6 +110,9 @@ const App = () => {
                   </DashboardContainer>
                 }
               />
+              <Route path='/producerform' exact element={<ProducerForm />} />
+              <Route path='/producers' exact element={<ProducerList />} />
+              <Route path='/producer/:id' element={<ProducerItem />} />
             </Routes>
           </Content>
         </AppContainer>

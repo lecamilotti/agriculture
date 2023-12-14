@@ -87,7 +87,7 @@ const ProducerList = () => {
     <ListContainer>
       {producers.map((producer) => (
         <Link to={`/producer/${producer.id}`} key={producer.id}>
-          <ProducerItem producer={producer}>
+          <ProducerItem>
             <ProducerInfo>
               <ProducerName>{producer.producerName}</ProducerName>
               <FarmName>{producer.farmName}</FarmName>
